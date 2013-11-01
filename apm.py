@@ -1,15 +1,18 @@
 import os, requests
 
 def mkdir(name):
-  if not os.path.exists(name):
-    os.makedirs(name)
+  if not os.path.exists(os.getcwd() + '/' + name):
+    os.makedirs(os.getcwd() + '/' + name)
+
+def touch(name):
+  open(os.getcwd() + '/' + name, 'a')
 
 def init(name='devops'):
   mkdir(name)
   # Touch hosts, site.yml
-  open(name + '/production', 'a')
-  open(name + '/staging', 'a')
-  open(name + '/site.yml', 'a')
+  touch(name + '/production')
+  touch(name + '/staging')
+  touch(name + '/site.yml')
   # mkdir roles, group_vars, host_vars
   mkdir(name + '/roles')
   mkdir(name + '/group_vars')
@@ -22,7 +25,7 @@ def generate(name, category='role'):
     mkdir(name + '/files')
     mkdir(name + '/handlers')
     mkdir(name + '/tasks')
-    open(name + '/tasks/main.yml', 'a')
+    touch(name + '/tasks/main.yml')
     mkdir(name + '/templates')
     mkdir(name + '/vars')
 
