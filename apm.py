@@ -47,7 +47,6 @@ def signup(config, parser):
       parser.set('apm', key, value)
     parser.write(open(config, 'w+'))
   else:
-    print r.text
     signup(config, parser)
 
 def submit(config, parser):
@@ -71,7 +70,8 @@ def submit(config, parser):
     tarname = os.getcwd() + '/' + data['name'] + '.tgz'
     tar = tarfile.open(tarname, 'w:gz')
     for filename in os.listdir(os.getcwd()):
-      tar.add(filename)
+      if filename is not '.git':
+        tar.add(filename)
     tar.close()
     files = {'playbook': open(tarname, 'rb')}
     print data
@@ -79,6 +79,20 @@ def submit(config, parser):
     print r.text
   else:
     exit('No apm.yml file found in the current working directory')
+
+def get():
+  name = sys.argv[2]
+  version = sys.argv[3] if len(sys.argv) == 4 else None
+  print 'http://localhost:5000/playbook/download/' + name + ('version/' + version) if version else ''
+  r = requests.get('http://localhost:5000/playbook/download/' + name + ('version/' + version) if version else '', stream=True)
+  tarname = 'playbook.gz'
+  with open(tarname, 'wb') as tar:
+    for chunk in r.iter_content(chunk_size=1024):
+      if chunk:
+        tar.write(chunk)
+        tar.flush()
+  tar = tarfile.open(tarname, 'r:gz')
+  tar.extractall('.')
 
 def printMenu():
   exit('''You must include one of the following options:\n
@@ -101,7 +115,10 @@ def main():
   elif option == 'generate':
     generate(sys.argv[2])
   elif option == 'get':
-    get(sys.argv[2])
+    if len(sys.argv) >= 3:
+      get()
+    else:
+      printMenu()
   elif option == 'submit':
     submit(config, parser)
   else:
