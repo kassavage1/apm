@@ -84,8 +84,8 @@ def get():
   name = sys.argv[2]
   version = sys.argv[3] if len(sys.argv) == 4 else None
   url = 'http://localhost:5000/playbook/download/' + name
-  if verion:
-  url += 'version/' + version
+  if version:
+    url += 'version/' + version
   r = requests.get(url, stream=True)
   tarname = 'playbook.gz'
   with open(tarname, 'wb') as tar:
@@ -96,6 +96,15 @@ def get():
   tar = tarfile.open(tarname, 'r:gz')
   mkdir(name)
   tar.extractall('./' + name)
+  os.remove(tarname)
+
+def info():
+  r = requests.get('http://localhost:5000/playbook/' + sys.argv[2])
+  print r.text
+
+def search():
+  r = requests.get('http://localhost:5000/playbook/search/' + sys.argv[2])
+  print r.text
 
 def printMenu():
   exit('''You must include one of the following options:\n
@@ -120,6 +129,16 @@ def main():
   elif option == 'get':
     if len(sys.argv) >= 3:
       get()
+    else:
+      printMenu()
+  elif option == 'info':
+    if len(sys.argv) >= 3:
+      info()
+    else:
+      printMenu()
+  elif option == 'search':
+    if len(sys.argv) >= 3:
+      search()
     else:
       printMenu()
   elif option == 'submit':
