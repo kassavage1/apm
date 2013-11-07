@@ -83,8 +83,10 @@ def submit(config, parser):
 def get():
   name = sys.argv[2]
   version = sys.argv[3] if len(sys.argv) == 4 else None
-  print 'http://localhost:5000/playbook/download/' + name + ('version/' + version) if version else ''
-  r = requests.get('http://localhost:5000/playbook/download/' + name + ('version/' + version) if version else '', stream=True)
+  url = 'http://localhost:5000/playbook/download/' + name
+  if verion:
+  url += 'version/' + version
+  r = requests.get(url, stream=True)
   tarname = 'playbook.gz'
   with open(tarname, 'wb') as tar:
     for chunk in r.iter_content(chunk_size=1024):
@@ -92,7 +94,8 @@ def get():
         tar.write(chunk)
         tar.flush()
   tar = tarfile.open(tarname, 'r:gz')
-  tar.extractall('.')
+  mkdir(name)
+  tar.extractall('./' + name)
 
 def printMenu():
   exit('''You must include one of the following options:\n
