@@ -1,0 +1,14 @@
+import APM from 'apm';
+
+const apm = new APM({
+	accuracy: 500,
+	timeSpan: 30000
+});
+
+setInterval(() => {
+	apm.add('example', 1);
+}, 500);
+
+setTimeout(() => {
+	console.log(apm.get('example')); // 60
+}, 30000);
